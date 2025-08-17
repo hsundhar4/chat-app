@@ -1,34 +1,40 @@
+require('dotenv').config(); // Load .env variables
+
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const socketIO = require('socket.io');
+
 const messageRoutes = require('./routes/messages');
-const authRoutes = require('./routes/auth'); // ✅ Add this
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const server = http.createServer(app);
+
+// ✅ Socket.IO setup
 const io = socketIO(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3000', // Frontend URL
     methods: ['GET', 'POST']
   }
 });
 
-// Middleware
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// ✅ API Routes
 app.use('/api/messages', messageRoutes);
-app.use('/api/auth', authRoutes); // ✅ Add this
+app.use('/api/auth', authRoutes);
 
-// MongoDB connection
-mongoose.connect('mongodb://localhost:27017/chatapp', {
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB error:', err));
 
 // ✅ Socket.IO logic
 io.on('connection', (socket) => {
@@ -51,6 +57,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Start server
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
