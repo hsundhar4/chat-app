@@ -23,7 +23,7 @@ app.use(express.json());
 app.use('/api/messages', messageRoutes);
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/chatapp', {
+mongoose.connect('mongodb+srv://chatuser:Vinayaka123@cluster0.suhvfnv.mongodb.net/cluster0?retryWrites=true&w=majority&appName=Cluster0') {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log('MongoDB connected'))
