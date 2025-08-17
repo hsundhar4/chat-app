@@ -1,16 +1,21 @@
-require('dotenv').config();
+require('dotenv').config(); // Load .env variables
 
 const express = require('express');
-const mongoose = require('mongoose');
+const http = require('http');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const socketIO = require('socket.io');
+
+const messageRoutes = require('./routes/messages');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+const server = http.createServer(app);
 
-// CORS setup
+// ✅ CORS Configuration
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://your-frontend.vercel.app' // Add your deployed frontend URL
+  'http://localhost:3000' // ✅ correct frontend origin
+  // Add your deployed frontend URL here if needed
 ];
 
 app.use(cors({
@@ -20,15 +25,11 @@ app.use(cors({
 
 app.use(express.json());
 
-// Routes
+// ✅ API Routes
+app.use('/api/messages', messageRoutes);
 app.use('/api/auth', authRoutes);
 
-// Root route for testing
-app.get('/', (req, res) => {
-  res.send('Backend is up and running 🚀');
-});
-
-// MongoDB connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -36,6 +37,41 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB error:', err));
 
-// Start server
+// ✅ Socket.IO setup
+const io = socketIO(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+// ✅ Socket.IO logic
+io.on('connection', (socket) => {
+  console.log('New client connected:', socket.id);
+
+  socket.on('joinRoom', (room) => {
+    socket.join(room);
+  });
+
+  socket.on('sendMessage', (msg) => {
+    io.to(msg.room).emit('receiveMessage', msg);
+  });
+
+  socket.on('typing', ({ room, user }) => {
+    socket.to(room).emit('typing', { user });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
+
+// ✅ Root route for testing
+app.get('/', (req, res) => {
+  res.send('Backend is up and running 🚀');
+});
+
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
