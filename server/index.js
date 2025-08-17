@@ -12,17 +12,13 @@ const authRoutes = require('./routes/auth');
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Socket.IO setup
-const io = socketIO(server, {
-  cors: {
-    origin: true, // Automatically reflects the request origin
-    methods: ['GET', 'POST'],
-    credentials: true
-  }
-});
+// ✅ CORS Configuration
+const allowedOrigins = ['http://localhost:3000', 'https://your-frontend-url.com']; // Add your deployed frontend URL here
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 
-// ✅ Middleware
-app.use(cors());
 app.use(express.json());
 
 // ✅ API Routes
@@ -36,6 +32,15 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB error:', err));
+
+// ✅ Socket.IO setup
+const io = socketIO(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 // ✅ Socket.IO logic
 io.on('connection', (socket) => {
