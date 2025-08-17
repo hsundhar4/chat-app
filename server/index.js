@@ -13,7 +13,10 @@ const app = express();
 const server = http.createServer(app);
 
 // ✅ CORS Configuration
-const allowedOrigins = ['http://localhost:3000', 'https://your-frontend-url.com']; // Add your deployed frontend URL here
+const allowedOrigins = [
+  'http://localhost:3000' // ✅ correct frontend origin
+];
+// Add your deployed frontend URL here
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
