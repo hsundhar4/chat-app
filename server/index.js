@@ -14,8 +14,8 @@ const server = http.createServer(app);
 
 // ✅ CORS Configuration
 const allowedOrigins = [
-  'http://localhost:3000' // ✅ correct frontend origin
-  // Add your deployed frontend URL here if needed
+  'http://localhost:3000',
+  'https://your-frontend-url.com' // Replace with your deployed frontend URL
 ];
 
 app.use(cors({
@@ -24,6 +24,11 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// ✅ Root Route (Fixes "Cannot GET /")
+app.get('/', (req, res) => {
+  res.send('🚀 Chat backend is live and ready!');
+});
 
 // ✅ API Routes
 app.use('/api/messages', messageRoutes);
