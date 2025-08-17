@@ -3,14 +3,14 @@ const http = require('http');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const socketIO = require('socket.io');
-const path = require('path');
 const messageRoutes = require('./routes/messages');
+const authRoutes = require('./routes/auth'); // ✅ Add this
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: 'http://localhost:3000', // Change this to your Render frontend URL after deployment
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST']
   }
 });
@@ -21,28 +21,29 @@ app.use(express.json());
 
 // Routes
 app.use('/api/messages', messageRoutes);
+app.use('/api/auth', authRoutes); // ✅ Add this
 
-// ✅ MongoDB connection (fixed)
-mongoose.connect('mongodb+srv://chatuser:Vinayaka123@cluster0.suhvfnv.mongodb.net/cluster0?retryWrites=true&w=majority&appName=Cluster0', {
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/chatapp', {
   useNewUrlParser: true,
   useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB error:', err));
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB error:', err));
 
-// Serve React frontend build
-app.use(express.static(path.join(__dirname, "../client/build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
-
-// Socket.IO logic
+// ✅ Socket.IO logic
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
 
-  socket.on('sendMessage', (data) => {
-    io.emit('receiveMessage', data); // Broadcast to all clients
+  socket.on('joinRoom', (room) => {
+    socket.join(room);
+  });
+
+  socket.on('sendMessage', (msg) => {
+    io.to(msg.room).emit('receiveMessage', msg);
+  });
+
+  socket.on('typing', ({ room, user }) => {
+    socket.to(room).emit('typing', { user });
   });
 
   socket.on('disconnect', () => {
