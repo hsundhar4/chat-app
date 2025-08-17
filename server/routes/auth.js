@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const router = express.Router();
+const SECRET = 'your_jwt_secret';
 
 router.post('/register', async (req, res) => {
   try {
@@ -23,7 +24,7 @@ router.post('/login', async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).send('Invalid credentials');
     }
-    const token = jwt.sign({ id: user._id }, 'secret', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: '1h' });
     res.json({ token, username: user.username });
   } catch (err) {
     res.status(500).send('Login failed');
