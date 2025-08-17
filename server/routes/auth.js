@@ -1,4 +1,15 @@
 const express = require('express');
+const router = express.Router();
+
+// ✅ Test route
+router.get('/test', (req, res) => {
+  res.send('✅ Auth route is working!');
+});
+
+module.exports = router;
+
+
+const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
