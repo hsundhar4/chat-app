@@ -7,11 +7,4 @@ const messageSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 });
 
-module.exports = {
-  Message: mongoose.model('Message', messageSchema)
-};
-
-const authMiddleware = require('../middleware/authMiddleware');
-router.post('/', authMiddleware, async (req, res) => {
-  // Only authenticated users can post messages
-});
+module.exports = mongoose.model('Message', messageSchema);
