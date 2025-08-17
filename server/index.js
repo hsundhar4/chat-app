@@ -22,12 +22,13 @@ app.use(express.json());
 // Routes
 app.use('/api/messages', messageRoutes);
 
-// MongoDB connection
-mongoose.connect('mongodb+srv://chatuser:Vinayaka123@cluster0.suhvfnv.mongodb.net/cluster0?retryWrites=true&w=majority&appName=Cluster0') {
+// ✅ MongoDB connection (fixed)
+mongoose.connect('mongodb+srv://chatuser:Vinayaka123@cluster0.suhvfnv.mongodb.net/cluster0?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB error:', err));
 
 // Serve React frontend build
 app.use(express.static(path.join(__dirname, "../client/build")));
