@@ -5,6 +5,7 @@ const User = require('../models/User');
 const router = express.Router();
 const SECRET = 'your_jwt_secret';
 
+// ✅ Registration Route
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -17,6 +18,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// ✅ Login Route (POST)
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -29,6 +31,11 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).send('Login failed');
   }
+});
+
+// ✅ Optional: GET route for browser visits
+router.get('/login', (req, res) => {
+  res.status(405).send('Use POST method to login.');
 });
 
 module.exports = router;
