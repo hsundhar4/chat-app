@@ -65,6 +65,10 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+app.get('/', (req, res) => {
+  res.send('Backend is up and running 🚀');
+});
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
