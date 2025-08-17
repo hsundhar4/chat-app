@@ -3,11 +3,6 @@ const router = express.Router();
 const { Message } = require('../models/Message');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// ✅ Public test route to verify endpoint
-router.get('/', (req, res) => {
-  res.send('Messages route is active');
-});
-
 // ✅ Get messages by room (protected)
 router.get('/:room', authMiddleware, async (req, res) => {
   try {
